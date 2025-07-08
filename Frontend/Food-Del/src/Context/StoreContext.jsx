@@ -37,7 +37,10 @@ const StoreContextProvider =(props)=>{
         })
         if (token) {
         try {
-          await axios.post(url + "/api/cart/remove", { itemId }, { headers: { token } });
+          await axios.delete(url + "/api/cart/remove", {
+        headers: { token },
+        data: { itemId },  // <-- itemId goes here under data
+      });
         } catch (err) {
           console.error("Failed to remove from backend:", err);
         }
@@ -45,9 +48,9 @@ const StoreContextProvider =(props)=>{
   }
 
 
-      // useEffect(() => {
-      //   console.log(cartItems);
-      // }, [cartItems]);
+      useEffect(() => {
+        console.log(cartItems);
+      }, [cartItems]);
     const getTotalCartAmount=()=>{
       let totalAmount=0;
       for(const item in cartItems)
@@ -62,9 +65,11 @@ const StoreContextProvider =(props)=>{
     }
     
     // based on distinct item id
-    const getTotalCartItems = () => {
-      return Object.keys(cartItems).filter((itemId) => cartItems[itemId] > 0).length;
-    };
+  const getTotalCartItems = () => {
+  if (!cartItems || typeof cartItems !== "object") return 0;
+  return Object.keys(cartItems).filter((itemId) => cartItems[itemId] > 0).length;
+};
+
 
 
     // for total no. of items
@@ -82,22 +87,62 @@ const StoreContextProvider =(props)=>{
       setFoodList(response.data.data)
     }
 
-    const loadCartData=async(token)=>{
-      const response=await axios.post(url+"/api/cart/get",{},{headers:token})
-      setcartItems(response.data.cartData)
-    }
+ const loadCartData = async (token) => {
+  try {
+    const response = await axios.get(url + "/api/cart/get", {
+      headers: { token },
+    });
+
+    console.log("✅ Cart data from backend:", response.data);
+
+    setcartItems(response.data.cartData || {});
+  } catch (err) {
+    console.error("Failed to load cart data:", err);
+    setcartItems({});
+  }
+};
+
+
     
-    useEffect(()=>{
-      async function loadData() {
-        await fetchFoodList()
-        if(localStorage.getItem("token")){
-          setToken(localStorage.getItem("token"))
-          await loadCartData(localStorage.getItem("token"))
-        }
-        
-      }
-      loadData()
-    },[])
+    useEffect(() => {
+  async function loadData() {
+    await fetchFoodList();
+    
+    const localToken = localStorage.getItem("token");
+    if (localToken) {
+      setToken(localToken); // safe, only once
+      await loadCartData(localToken); // pass directly
+    }
+  }
+
+  loadData();
+}, []);
+
+
+
+
+// Clear cart and token on logout
+// Load the correct cart when a new token is set
+const logout = () => {
+  localStorage.removeItem("token");
+  setToken("");
+  setcartItems({});
+};
+
+
+// Add useEffect to load cart whenever token changes
+// This makes sure cart is updated when a new token is set (e.g. on login):
+useEffect(() => {
+  if (token) {
+    loadCartData(token);
+  } else {
+    setcartItems({});
+  }
+}, [token]);
+
+const clearCart = () => {
+  setcartItems({});
+};
 
     const contextValue={
         food_list,
@@ -110,6 +155,9 @@ const StoreContextProvider =(props)=>{
         url,
         token,
         setToken,
+        loadCartData,
+        logout,
+        clearCart,
     }
     return(
         <StoreContext.Provider value={contextValue}>

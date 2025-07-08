@@ -17,7 +17,7 @@ const App = () => {
       <hr className='border-none h-[1px] bg-[#a9a9a9]'/>
       <div className='flex'>
         <Sidebar />
-        <div> {/* Add padding if needed */}
+        <div className='flex-1 p-6'> {/* Add padding if needed */}
           <Routes>
             <Route path="/add" element={<Add url={url}/>} />
             <Route path="/list" element={<List url={url} />} />

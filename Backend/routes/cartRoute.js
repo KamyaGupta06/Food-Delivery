@@ -5,8 +5,8 @@ import authMiddleware from "../middleware/auth.js";
 const cartRouter =express.Router();
 
 cartRouter.post("/add",authMiddleware,addToCart)
-cartRouter.delete("/remove",removeFromCart)
-cartRouter.get("/get",getCart)
+cartRouter.delete("/remove",authMiddleware,removeFromCart)
+cartRouter.get("/get",authMiddleware,getCart)
 
 
 export default cartRouter

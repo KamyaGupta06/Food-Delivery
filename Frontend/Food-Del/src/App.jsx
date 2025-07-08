@@ -7,37 +7,39 @@ import Cart from './Pages/Cart/Cart'
 import PlaceOrder from './Pages/PlaceOrder/PlaceOrder'
 import Footer from './Components/Footer/Footer'
 import LoginPopUp from './Components/LoginPopUp/LoginPopUp'
+import Verify from './Pages/Verify/Verify'
+import MyOrders from './Pages/MyOrders/MyOrders'
 
 
-// IN redux only
-import { useDispatch,useSelector } from 'react-redux';
-import {loadCartDataAPI, setToken,Url} from './Redux/storeSlice';
 
 
 const routes = [
   { path: "/", element: <Home /> },
   { path: "/home", element: <Home /> },
   { path: "/cart", element: <Cart /> },
-  { path: "/order", element: <PlaceOrder /> }
+  { path: "/order", element: <PlaceOrder /> },
+  { path: "/verify", element: <Verify/>},
+  { path: "/myorders", element: <MyOrders/>},
+  
 ];
 const App = () => {
 
-  // In redux only
-  const dispatch = useDispatch();
-  const url = useSelector(Url);
-  const localToken = localStorage.getItem("token");
-  useEffect(() => {
-    if (localToken) {
-      dispatch(setToken(localToken));
-    }
-  }, [dispatch]);
+  // // In redux only
+  // const dispatch = useDispatch();
+  // const url = useSelector(Url);
+  // const localToken = localStorage.getItem("token");
+  // useEffect(() => {
+  //   if (localToken) {
+  //     dispatch(setToken(localToken));
+  //   }
+  // }, [dispatch]);
 
-  useEffect(() => {
-    if (localToken) {
-      dispatch(setToken(localToken)); // Only if you're tracking token in redux
-      dispatch(loadCartDataAPI({token: localToken, url }));
-    }
-  }, [dispatch, localToken, url]);
+  // useEffect(() => {
+  //   if (localToken) {
+  //     // dispatch(setToken(localToken)); // Only if you're tracking token in redux
+  //     dispatch(loadCartDataAPI({token: localToken, url }));
+  //   }
+  // }, [dispatch, localToken, url]);
 
 
   const [showLogin,setShowLogin]=useState(false)
