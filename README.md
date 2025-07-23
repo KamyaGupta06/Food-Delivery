@@ -33,7 +33,7 @@
 - MongoDB with Mongoose
 - Razorpay API for payments
 
-  ---
+---
 
 ## 📦 Setup
 
